@@ -1,8 +1,29 @@
-# Ganglia v1.0.0
+<div align="center">
 
-Ganglia is a local-first reasoning-control middleware for Ollama and OpenAI-compatible LLM stacks.
+# 🧠 Ganglia v1.0.0
 
-It routes each request through a declarative language-game operator, asks the LLM for a structured reasoning object, validates the object, repairs failed outputs, stores a trace, and returns a controlled answer.
+**Local-first reasoning-control middleware for Ollama and OpenAI-compatible LLM stacks.**
+
+Ganglia routes each request through a declarative language-game operator, asks the LLM for a structured reasoning object, validates the object, repairs failed outputs, stores a trace, and returns a controlled answer.
+
+[![Python](https://img.shields.io/badge/python-%3E%3D3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)](pyproject.toml)
+[![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
+[![FastAPI](https://img.shields.io/badge/FastAPI-runtime-009688?style=for-the-badge&logo=fastapi&logoColor=white)](pyproject.toml)
+[![Pydantic](https://img.shields.io/badge/Pydantic-v2-E92063?style=for-the-badge)](pyproject.toml)
+[![Ollama](https://img.shields.io/badge/Ollama-compatible-111111?style=for-the-badge)](#how-to-start-in-3-minutes)
+[![OpenAI Compatible](https://img.shields.io/badge/OpenAI--compatible-endpoint-412991?style=for-the-badge)](#post-v1chatcompletions)
+[![Local First](https://img.shields.io/badge/local--first-runtime-blue?style=for-the-badge)](#what-ganglia-is)
+[![JSON Schema](https://img.shields.io/badge/JSON%20Schema-validation-orange?style=for-the-badge)](#validation-and-repair)
+
+</div>
+
+---
+
+## Works with
+
+| LLM runtime | API surface | App integrations | Framework integrations | Runtime tools |
+| --- | --- | --- | --- | --- |
+| Ollama | OpenAI-compatible clients | Open WebUI, AnythingLLM, Continue.dev | LangChain, LlamaIndex, Haystack | FastAPI, Docker Compose, JSON Schema, local scripts |
 
 Ganglia is named after the basal ganglia: a biological gating system associated with selection, inhibition, sequencing, and release of actions. In this software, Ganglia gates reasoning operations before the answer is released.
 
@@ -73,18 +94,14 @@ curl -X POST http://127.0.0.1:8717/v1/chat/completions \
 
 Ganglia is a runtime gateway:
 
-```text
-User / App
-   ↓
-Ganglia
-   ↓
-Language-game operator
-   ↓
-Ollama LLM
-   ↓
-Validation / repair
-   ↓
-Controlled answer
+```mermaid
+flowchart LR
+    A[User / App] --> B[Ganglia]
+    B --> C[Language-game operator]
+    C --> D[Ollama LLM]
+    D --> E[Validation / repair]
+    E --> F[Trace store]
+    E --> G[Controlled answer]
 ```
 
 It exists to prevent unconstrained free-answering when the user wants a repeatable reasoning protocol.
@@ -122,7 +139,23 @@ Store the trace.
 
 This is a stronger enforcement pattern for local LLM stacks.
 
+| Step | Ganglia control point |
+| --- | --- |
+| 1 | Select a language-game operator. |
+| 2 | Compile the operator prompt. |
+| 3 | Require the operator JSON schema. |
+| 4 | Pass semantic checks. |
+| 5 | Repair failures before release. |
+| 6 | Store the trace. |
+| 7 | Return a controlled answer. |
+
 ## Built-in operators
+
+| Operator | Purpose | Use it for |
+| --- | --- | --- |
+| `coordinate_game` | Forces abstract entities into a two-axis 0-10 coordinate system. | mapping, plotting, positioning, scoring, abstract coordinate systems |
+| `grid_game` | Forces content into a comparative matrix. | comparison, classification, matrix design, MECE table forcing, relational ontologies |
+| `adversarial_grid_chain` | Applies adversarial testing, then formalises the result as a failure matrix. | stress-testing, falsification, red-team review, risk detection, failure-mode analysis |
 
 ### `coordinate_game`
 
@@ -172,6 +205,15 @@ Use it for:
 - failure-mode analysis.
 
 ## API
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `GET` | `/health` | Returns status and loaded operator count. |
+| `GET` | `/operators` | Lists loaded operators and invalid operator files. |
+| `POST` | `/reason` | Native Ganglia endpoint. |
+| `POST` | `/v1/chat/completions` | OpenAI-compatible endpoint. |
+| `GET` | `/trace` | Lists recent traces. |
+| `GET` | `/trace/{trace_id}` | Shows a full trace. |
 
 ### `GET /health`
 
@@ -242,11 +284,14 @@ Lists recent traces.
 
 Shows a full trace.
 
-Trace records include user messages, compiled prompts, raw model outputs, validation errors, repair attempts, and final answers. Disable trace exposure in shared deployments:
+Trace records include user messages, compiled prompts, raw model outputs, validation errors, repair attempts, and final answers.
 
-```env
-GANGLIA_EXPOSE_TRACE=false
-```
+> [!WARNING]
+> Disable trace exposure in shared deployments:
+>
+> ```env
+> GANGLIA_EXPOSE_TRACE=false
+> ```
 
 ## Configuration
 
@@ -274,6 +319,16 @@ GANGLIA_EXPOSE_TRACE=true
 ```
 
 ## CLI
+
+| Command | Purpose |
+| --- | --- |
+| `ganglia serve` | Start the server. |
+| `ganglia operators` | List operators. |
+| `ganglia test "Map remote work against operational overhead and knowledge siloing."` | Run a one-off request. |
+| `ganglia validate-operator operators/my_game.lg.json` | Validate an operator. |
+| `ganglia init-operator my_new_game` | Create an operator template. |
+| `ganglia trace list` | List traces. |
+| `ganglia trace show TRACE_ID` | Show a trace. |
 
 Start the server:
 
@@ -366,14 +421,16 @@ ganglia/auto
 
 Integration guides are in `INTEGRATIONS.md` for:
 
-- Open WebUI,
-- AnythingLLM,
-- Continue.dev,
-- LangChain,
-- LlamaIndex,
-- Haystack,
-- custom apps,
-- local scripts.
+| Integration | Connection style | Base URL / model | Notes |
+| --- | --- | --- | --- |
+| Open WebUI | OpenAI-compatible endpoint | `http://127.0.0.1:8717/v1` / `ganglia/auto` | Listed in `INTEGRATIONS.md`. |
+| AnythingLLM | OpenAI-compatible endpoint | `http://127.0.0.1:8717/v1` / `ganglia/auto` | Listed in `INTEGRATIONS.md`. |
+| Continue.dev | OpenAI-compatible endpoint | `http://127.0.0.1:8717/v1` / `ganglia/auto` | Listed in `INTEGRATIONS.md`. |
+| LangChain | OpenAI-compatible endpoint | `http://127.0.0.1:8717/v1` / `ganglia/auto` | Listed in `INTEGRATIONS.md`. |
+| LlamaIndex | OpenAI-compatible endpoint | `http://127.0.0.1:8717/v1` / `ganglia/auto` | Listed in `INTEGRATIONS.md`. |
+| Haystack | OpenAI-compatible endpoint | `http://127.0.0.1:8717/v1` / `ganglia/auto` | Listed in `INTEGRATIONS.md`. |
+| Custom apps | Native or OpenAI-compatible endpoint | `/reason` or `/v1/chat/completions` | Listed in `INTEGRATIONS.md`. |
+| Local scripts | Native or OpenAI-compatible endpoint | `/reason` or `/v1/chat/completions` | Listed in `INTEGRATIONS.md`. |
 
 ## Docker
 
@@ -409,12 +466,13 @@ If repair fails after `GANGLIA_MAX_RETRIES`, the request returns a validation er
 
 ## Production notes
 
-Before exposing Ganglia beyond localhost:
-
-```env
-GANGLIA_REQUIRE_API_KEY=true
-GANGLIA_API_KEY=use-a-long-random-token
-```
+> [!IMPORTANT]
+> Before exposing Ganglia beyond localhost:
+>
+> ```env
+> GANGLIA_REQUIRE_API_KEY=true
+> GANGLIA_API_KEY=use-a-long-random-token
+> ```
 
 Then clients must send:
 
@@ -422,7 +480,19 @@ Then clients must send:
 Authorization: Bearer use-a-long-random-token
 ```
 
-Ganglia v1.0.0 intentionally does not support arbitrary Python plugins. Operator files are declarative only.
+> [!IMPORTANT]
+> Ganglia v1.0.0 intentionally does not support arbitrary Python plugins. Operator files are declarative only.
+
+## Documentation
+
+| Document | Purpose |
+| --- | --- |
+| [`ARCHITECTURE.md`](ARCHITECTURE.md) | Architecture details. |
+| [`OPERATORS.md`](OPERATORS.md) | Operator details. |
+| [`INTEGRATIONS.md`](INTEGRATIONS.md) | Integration guides. |
+| [`SECURITY.md`](SECURITY.md) | Security notes. |
+| [`CHANGELOG.md`](CHANGELOG.md) | Release changes. |
+| [`examples/`](examples/) | Example operators and scripts. |
 
 ## Troubleshooting
 
