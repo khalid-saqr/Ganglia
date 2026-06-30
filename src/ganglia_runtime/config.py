@@ -31,7 +31,8 @@ class Settings:
     max_retries: int = 2
     temperature: float = 0.2
     timeout_seconds: int = 120
-    expose_trace: bool = True
+    expose_trace: bool = False
+    trace_require_api_key: bool = True
 
     @classmethod
     def from_env(cls, env_file: str | None = None) -> "Settings":
@@ -52,7 +53,8 @@ class Settings:
             max_retries=int(os.getenv("GANGLIA_MAX_RETRIES", "2")),
             temperature=float(os.getenv("GANGLIA_TEMPERATURE", "0.2")),
             timeout_seconds=int(os.getenv("GANGLIA_TIMEOUT_SECONDS", "120")),
-            expose_trace=_bool(os.getenv("GANGLIA_EXPOSE_TRACE"), True),
+            expose_trace=_bool(os.getenv("GANGLIA_EXPOSE_TRACE"), False),
+            trace_require_api_key=_bool(os.getenv("GANGLIA_TRACE_REQUIRE_API_KEY"), True),
         )
 
     @property
