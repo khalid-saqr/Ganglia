@@ -1,0 +1,65 @@
+{
+  "id": "coordinate_game",
+  "name": "Coordinate Game",
+  "version": "1.0.0",
+  "category": "engine",
+  "description": "Forces abstract entities into an explicit numerical coordinate system using user-defined or model-inferred axes.",
+  "routing": {
+    "intent_hints": ["map", "plot", "axis", "axes", "position", "score", "coordinate", "rank", "space"],
+    "default_when_user_mentions": ["map", "plot", "against", "coordinates", "axes"],
+    "priority": 10
+  },
+  "chain": [],
+  "system_prompt": "You are Ganglia, a reasoning-control runtime. You are not free-answering. You are executing the Coordinate Game.",
+  "operator_rules": [
+    "Construct an artificial two-axis coordinate system suitable for the request.",
+    "Define the ontology: the entities that exist in the reasoning space.",
+    "Define an X-axis and a Y-axis with a 0 to 10 scale.",
+    "Assign each relevant entity exact coordinates from 0 to 10.",
+    "Justify every coordinate using only the axis definitions.",
+    "State assumptions and failure conditions.",
+    "Return only JSON matching the schema."
+  ],
+  "prompt_template": "User request:\n{{ user_message }}\n\nExecute the Coordinate Game. If the user supplied axes, use them. If not, infer the most useful X and Y axes and make the inference explicit in assumptions.",
+  "output_schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["operator", "ontology", "x_axis", "y_axis", "placements", "assumptions", "failure_conditions", "final_answer"],
+    "properties": {
+      "operator": {"type": "string", "const": "coordinate_game"},
+      "ontology": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+      "x_axis": {"type": "string", "minLength": 3},
+      "y_axis": {"type": "string", "minLength": 3},
+      "placements": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["entity", "x_coordinate", "y_coordinate", "x_justification", "y_justification"],
+          "properties": {
+            "entity": {"type": "string", "minLength": 1},
+            "x_coordinate": {"type": "number", "minimum": 0, "maximum": 10},
+            "y_coordinate": {"type": "number", "minimum": 0, "maximum": 10},
+            "x_justification": {"type": "string", "minLength": 20},
+            "y_justification": {"type": "string", "minLength": 20}
+          }
+        }
+      },
+      "assumptions": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+      "failure_conditions": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+      "final_answer": {"type": "string", "minLength": 30}
+    }
+  },
+  "semantic_validation": {
+    "must_include_fields": ["operator", "x_axis", "y_axis", "final_answer"],
+    "min_items": {"ontology": 1, "placements": 1, "assumptions": 1, "failure_conditions": 1},
+    "min_string_length": {"final_answer": 30},
+    "coordinate_fields_must_be_between": [0, 10]
+  },
+  "repair_prompt": "Repair the output so it obeys the Coordinate Game schema, contains 0-10 coordinates, justifies every coordinate against the axes, and preserves the original user task.",
+  "renderer": {
+    "mode": "markdown",
+    "template": "{{ final_answer }}\n\n## Coordinate Map\n\nX-axis: {{ x_axis }}\n\nY-axis: {{ y_axis }}\n\n{% for p in placements %}- {{ p.entity }}: ({{ p.x_coordinate }}, {{ p.y_coordinate }}) — X: {{ p.x_justification }} Y: {{ p.y_justification }}\n{% endfor %}\n## Assumptions\n{% for item in assumptions %}- {{ item }}\n{% endfor %}\n## Failure Conditions\n{% for item in failure_conditions %}- {{ item }}\n{% endfor %}"
+  }
+}

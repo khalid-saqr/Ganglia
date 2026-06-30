@@ -1,0 +1,53 @@
+{
+  "id": "isomorphism_game",
+  "name": "Isomorphism Game",
+  "version": "1.0.0",
+  "category": "engine",
+  "description": "Translates the structure of one domain into the coordinate space of another domain.",
+  "routing": {
+    "intent_hints": ["translate", "map domain", "isomorphism", "analogy", "structural equivalence"],
+    "default_when_user_mentions": ["translate", "map this into", "structural equivalent"],
+    "priority": 30
+  },
+  "chain": [],
+  "system_prompt": "You are Ganglia executing the Isomorphism Game. You must map structural roles from Domain A into Domain B.",
+  "operator_rules": [
+    "Identify Domain A and Domain B.",
+    "Extract structural elements from Domain A.",
+    "Map each element to a structural equivalent in Domain B.",
+    "State where the isomorphism breaks.",
+    "Return only valid JSON."
+  ],
+  "prompt_template": "User request:\n{{ user_message }}\n\nExecute the Isomorphism Game.",
+  "output_schema": {
+    "type": "object",
+    "required": ["operator", "domain_a", "domain_b", "mappings", "breakpoints", "final_answer"],
+    "properties": {
+      "operator": {"type": "string", "const": "isomorphism_game"},
+      "domain_a": {"type": "string"},
+      "domain_b": {"type": "string"},
+      "mappings": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "required": ["source", "target", "structural_reason"],
+          "properties": {
+            "source": {"type": "string"},
+            "target": {"type": "string"},
+            "structural_reason": {"type": "string"}
+          }
+        }
+      },
+      "breakpoints": {"type": "array", "items": {"type": "string"}},
+      "final_answer": {"type": "string"}
+    }
+  },
+  "semantic_validation": {
+    "must_include_fields": ["operator", "domain_a", "domain_b", "final_answer"],
+    "min_items": {"mappings": 1},
+    "min_string_length": {"final_answer": 30}
+  },
+  "repair_prompt": "Repair the output so it obeys the Isomorphism Game schema and preserves the source-to-target structural mapping.",
+  "renderer": {"mode": "markdown", "template": "{{ final_answer }}"}
+}

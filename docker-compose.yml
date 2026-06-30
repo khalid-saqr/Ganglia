@@ -1,0 +1,17 @@
+services:
+  ganglia:
+    build: .
+    ports:
+      - "8717:8717"
+    environment:
+      GANGLIA_HOST: 0.0.0.0
+      GANGLIA_PORT: 8717
+      GANGLIA_OLLAMA_URL: http://host.docker.internal:11434
+      GANGLIA_MODEL: llama3.1:8b
+      GANGLIA_TRACE_DB: /data/ganglia_traces.sqlite
+    volumes:
+      - ganglia-data:/data
+      - ./operators:/app/operators:ro
+
+volumes:
+  ganglia-data:

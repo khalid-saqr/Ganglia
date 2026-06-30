@@ -1,0 +1,6 @@
+models:
+  - name: Ganglia Auto
+    provider: openai
+    model: ganglia/auto
+    apiBase: http://127.0.0.1:8717/v1
+    apiKey: local

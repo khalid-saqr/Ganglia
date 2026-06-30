@@ -1,0 +1,43 @@
+{
+  "id": "taboo_coordinate_chain",
+  "name": "Taboo → Coordinate Chain",
+  "version": "1.0.0",
+  "category": "modifier_to_engine",
+  "description": "Blocks dominant vocabulary first, then maps the reframed concept into coordinates.",
+  "routing": {
+    "intent_hints": ["without using", "avoid words", "non-cliche", "lateral", "taboo"],
+    "default_when_user_mentions": ["without using", "avoid the words", "do not use"],
+    "priority": 90
+  },
+  "chain": ["taboo_modifier", "coordinate_game"],
+  "system_prompt": "You are Ganglia executing a Taboo modifier followed by the Coordinate Game.",
+  "operator_rules": [
+    "Respect forbidden vocabulary provided by the user.",
+    "Reframe the concept without using forbidden terms.",
+    "Construct two axes for the reframed concept.",
+    "Assign 0-10 coordinates and justify them.",
+    "Return only valid JSON."
+  ],
+  "prompt_template": "User request:\n{{ user_message }}\n\nExecute the Taboo → Coordinate Chain.",
+  "output_schema": {
+    "type": "object",
+    "required": ["operator", "forbidden_terms", "reframed_concept", "x_axis", "y_axis", "placements", "final_answer"],
+    "properties": {
+      "operator": {"type": "string", "const": "taboo_coordinate_chain"},
+      "forbidden_terms": {"type": "array", "items": {"type": "string"}},
+      "reframed_concept": {"type": "string"},
+      "x_axis": {"type": "string"},
+      "y_axis": {"type": "string"},
+      "placements": {"type": "array", "items": {"type": "object"}},
+      "final_answer": {"type": "string"}
+    }
+  },
+  "semantic_validation": {
+    "must_include_fields": ["operator", "reframed_concept", "final_answer"],
+    "min_items": {"placements": 1},
+    "must_not_include_forbidden_terms_in": ["reframed_concept", "final_answer"],
+    "coordinate_fields_must_be_between": [0, 10]
+  },
+  "repair_prompt": "Repair the output so it obeys taboo constraints and Coordinate Game structure.",
+  "renderer": {"mode": "markdown", "template": "{{ final_answer }}"}
+}
