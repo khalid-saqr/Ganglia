@@ -3,12 +3,21 @@ from __future__ import annotations
 from .operator_loader import OperatorRegistry
 
 
+AUTO_OPERATOR_IDS = {None, "", "auto", "ganglia", "ganglia/auto"}
+
+
+def _normalize_requested_operator(requested: str | None) -> str | None:
+    if requested and requested.startswith("ganglia/"):
+        return requested.split("/", 1)[1]
+    return requested
+
+
 def route_operator(message: str, registry: OperatorRegistry, requested: str | None = None) -> str:
-    if requested and requested not in {"", "auto", "ganglia", "ganglia/auto"}:
-        if requested.startswith("ganglia/"):
-            requested = requested.split("/", 1)[1]
-        if registry.get(requested):
-            return requested
+    if requested not in AUTO_OPERATOR_IDS:
+        normalized = _normalize_requested_operator(requested) or ""
+        if registry.get(normalized):
+            return normalized
+        return normalized
 
     text = message.lower()
     best_id = "coordinate_game"
