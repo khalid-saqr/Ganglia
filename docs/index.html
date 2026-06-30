@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Ganglia is local-first LLM middleware that turns Wittgenstein's language-games into developer-facing reasoning protocols for Ollama and OpenAI-compatible stacks."
+    />
+    <title>Ganglia — Language-game reasoning control for local LLMs</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main>
+      <section class="hero section-grid" aria-labelledby="hero-title">
+        <div class="hero__copy">
+          <p class="eyebrow">Language-games for LLM middleware</p>
+          <h1 id="hero-title">Do not just prompt the model. Give it a game to play.</h1>
+          <p class="hero__lead">
+            Ganglia translates Wittgenstein's insight that words work inside rule-governed
+            activities into a local-first runtime for controlled LLM reasoning.
+          </p>
+          <div class="hero__actions" aria-label="Primary links">
+            <a class="button button--primary" href="../README.md">Read the project README</a>
+            <a class="button button--ghost" href="https://github.com/your-org/ganglia-runtime">Open GitHub</a>
+          </div>
+        </div>
+
+        <div class="hero__panel" aria-label="Ganglia reasoning route">
+          <div class="route-card route-card--hot">User asks for an answer</div>
+          <div class="route-line"></div>
+          <div class="route-card">Ganglia selects a language-game operator</div>
+          <div class="route-line"></div>
+          <div class="route-card">The LLM must return the expected structured object</div>
+          <div class="route-line"></div>
+          <div class="route-card route-card--cool">Validation, repair, trace, controlled answer</div>
+        </div>
+      </section>
+
+      <section class="section section--tight" aria-labelledby="wittgenstein-title">
+        <div class="section-heading">
+          <p class="eyebrow">The idea</p>
+          <h2 id="wittgenstein-title">Wittgenstein for the developer seeing Ganglia first</h2>
+          <p>
+            In <cite>Philosophical Investigations</cite>, Wittgenstein uses language-games to
+            show that meaning is not an isolated label attached to a word. Meaning depends on
+            the activity, rules, and situation in which language is used.
+          </p>
+        </div>
+
+        <div class="concept-grid">
+          <article class="concept-card">
+            <span class="concept-card__number">01</span>
+            <h3>Language is an activity</h3>
+            <p>
+              A phrase such as a request, command, comparison, classification, or warning only
+              becomes legible inside the activity where it is used.
+            </p>
+          </article>
+          <article class="concept-card">
+            <span class="concept-card__number">02</span>
+            <h3>Rules shape meaning</h3>
+            <p>
+              Language-games are not rigid programming languages. They are practical patterns
+              with enough rules to make a move count as correct, broken, missing, or repaired.
+            </p>
+          </article>
+          <article class="concept-card">
+            <span class="concept-card__number">03</span>
+            <h3>Games clarify use</h3>
+            <p>
+              Ganglia treats an LLM response as a move in a designed language-game: the operator
+              names the task, the schema defines the move, and validators decide whether it passes.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section section-grid section-grid--reversed" aria-labelledby="llm-title">
+        <div class="section-heading">
+          <p class="eyebrow">LLM reasoning design</p>
+          <h2 id="llm-title">From free-answering to observable reasoning products</h2>
+          <p>
+            Ganglia does not claim to control hidden model cognition. It controls the observable
+            product: the structured reasoning object the model must emit and pass through validation.
+          </p>
+        </div>
+
+        <div class="design-stack" aria-label="Reasoning design ladder">
+          <div class="design-step"><strong>1. Operator</strong><span>Choose the language-game.</span></div>
+          <div class="design-step"><strong>2. Prompt contract</strong><span>Compile the instructions.</span></div>
+          <div class="design-step"><strong>3. JSON schema</strong><span>Force a checkable shape.</span></div>
+          <div class="design-step"><strong>4. Semantic checks</strong><span>Validate the move, not only the syntax.</span></div>
+          <div class="design-step"><strong>5. Repair loop</strong><span>Ask for a corrected move before release.</span></div>
+          <div class="design-step"><strong>6. Trace</strong><span>Keep the observable record.</span></div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="operators-title">
+        <div class="section-heading section-heading--center">
+          <p class="eyebrow">Built-in games</p>
+          <h2 id="operators-title">Three ways to make a model play by rules</h2>
+        </div>
+
+        <div class="operator-grid">
+          <article class="operator-card">
+            <h3><code>coordinate_game</code></h3>
+            <p>Forces abstract entities into a two-axis 0-10 coordinate system.</p>
+            <ul>
+              <li>mapping</li>
+              <li>plotting</li>
+              <li>positioning</li>
+            </ul>
+          </article>
+          <article class="operator-card">
+            <h3><code>grid_game</code></h3>
+            <p>Forces content into a comparative matrix.</p>
+            <ul>
+              <li>comparison</li>
+              <li>classification</li>
+              <li>MECE table forcing</li>
+            </ul>
+          </article>
+          <article class="operator-card">
+            <h3><code>adversarial_grid_chain</code></h3>
+            <p>Applies adversarial testing, then formalises the result as a failure matrix.</p>
+            <ul>
+              <li>stress-testing</li>
+              <li>falsification</li>
+              <li>risk detection</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section section--band" aria-labelledby="flow-title">
+        <div class="section-heading section-heading--center">
+          <p class="eyebrow">Runtime shape</p>
+          <h2 id="flow-title">A local-first gateway between apps and LLMs</h2>
+        </div>
+
+        <div class="flow" aria-label="Ganglia runtime flow">
+          <span>User / App</span>
+          <span>Ganglia</span>
+          <span>Language-game operator</span>
+          <span>Ollama LLM</span>
+          <span>Validation / repair</span>
+          <span>Controlled answer</span>
+        </div>
+      </section>
+
+      <section class="section section-grid" aria-labelledby="integrations-title">
+        <div class="section-heading">
+          <p class="eyebrow">Use it where developers already work</p>
+          <h2 id="integrations-title">OpenAI-compatible surface, local control</h2>
+          <p>
+            Ganglia exposes a native endpoint and an OpenAI-compatible chat completions endpoint.
+            Keep using local tools and integrations while routing responses through a language-game.
+          </p>
+          <a class="text-link" href="../INTEGRATIONS.md">Read integration guides →</a>
+        </div>
+
+        <div class="chip-cloud" aria-label="Supported integration names">
+          <span>Ollama</span>
+          <span>Open WebUI</span>
+          <span>AnythingLLM</span>
+          <span>Continue.dev</span>
+          <span>LangChain</span>
+          <span>LlamaIndex</span>
+          <span>Haystack</span>
+          <span>Custom apps</span>
+          <span>Local scripts</span>
+        </div>
+      </section>
+
+      <section class="section section--tight" aria-labelledby="quickstart-title">
+        <div class="section-heading section-heading--center">
+          <p class="eyebrow">Try the project</p>
+          <h2 id="quickstart-title">Run the middleware, then send one controlled request</h2>
+        </div>
+
+        <div class="terminal-grid">
+          <pre><code>ollama serve
+ollama pull llama3.1:8b</code></pre>
+          <pre><code>pip install .
+ganglia serve</code></pre>
+          <pre><code>curl -X POST http://127.0.0.1:8717/reason \
+  -H "Content-Type: application/json" \
+  -d '{"message":"Map remote work against operational overhead and knowledge siloing."}'</code></pre>
+        </div>
+      </section>
+
+      <section class="section section--sources" aria-labelledby="sources-title">
+        <div class="section-heading">
+          <p class="eyebrow">Reference-grounded claims</p>
+          <h2 id="sources-title">Sources for the philosophical translation</h2>
+          <p>
+            The site uses Wittgenstein's language-game idea as a design lens, not as a claim that
+            LLM cognition is fully controllable. The project controls the response artifact that
+            can be validated, repaired, traced, and returned.
+          </p>
+        </div>
+        <ul class="source-list">
+          <li>
+            <a href="https://plato.stanford.edu/entries/wittgenstein/">Stanford Encyclopedia of Philosophy: Ludwig Wittgenstein</a>
+            — overview of language-games, forms of life, and rule-governed language use.
+          </li>
+          <li>
+            <a href="https://archive.org/details/philosophicalinvestigations_201911">Internet Archive: <cite>Philosophical Investigations</cite></a>
+            — bibliographic reference for Wittgenstein's original work in which language-games are developed.
+          </li>
+          <li>
+            <a href="../README.md">Ganglia README</a>
+            — installation, API, operators, traces, configuration, and production notes.
+          </li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
