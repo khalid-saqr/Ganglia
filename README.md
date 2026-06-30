@@ -212,8 +212,8 @@ Use it for:
 | `GET` | `/operators` | Lists loaded operators and invalid operator files. |
 | `POST` | `/reason` | Native Ganglia endpoint. |
 | `POST` | `/v1/chat/completions` | OpenAI-compatible endpoint. |
-| `GET` | `/trace` | Lists recent traces. |
-| `GET` | `/trace/{trace_id}` | Shows a full trace. |
+| `GET` | `/trace` | Lists recent traces when trace exposure is explicitly enabled and authorized. |
+| `GET` | `/trace/{trace_id}` | Shows a full trace when trace exposure is explicitly enabled and authorized. |
 
 ### `GET /health`
 
@@ -278,19 +278,21 @@ curl -X POST http://127.0.0.1:8717/v1/chat/completions \
 
 ### `GET /trace`
 
-Lists recent traces.
+Lists recent traces. This endpoint is disabled by default and requires `GANGLIA_EXPOSE_TRACE=true`. By default, it also requires a bearer token configured with `GANGLIA_API_KEY`.
 
 ### `GET /trace/{trace_id}`
 
-Shows a full trace.
+Shows a full trace. This endpoint is disabled by default and requires `GANGLIA_EXPOSE_TRACE=true`. By default, it also requires a bearer token configured with `GANGLIA_API_KEY`.
 
-Trace records include user messages, compiled prompts, raw model outputs, validation errors, repair attempts, and final answers.
+Trace records can contain sensitive data, including user prompts, compiled prompts, raw model output, validation errors, repair attempts, and final answers. Do not expose trace endpoints in shared or public deployments unless access is explicitly authorized.
 
 > [!WARNING]
-> Disable trace exposure in shared deployments:
+> Trace exposure is off by default. To enable it for a protected deployment, set:
 >
 > ```env
-> GANGLIA_EXPOSE_TRACE=false
+> GANGLIA_EXPOSE_TRACE=true
+> GANGLIA_TRACE_REQUIRE_API_KEY=true
+> GANGLIA_API_KEY=replace-me
 > ```
 
 ## Configuration
@@ -315,7 +317,8 @@ GANGLIA_OPERATORS_DIR=./operators
 GANGLIA_MAX_RETRIES=2
 GANGLIA_TEMPERATURE=0.2
 GANGLIA_TIMEOUT_SECONDS=120
-GANGLIA_EXPOSE_TRACE=true
+GANGLIA_EXPOSE_TRACE=false
+GANGLIA_TRACE_REQUIRE_API_KEY=true
 ```
 
 ## CLI

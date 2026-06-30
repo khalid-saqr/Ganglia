@@ -30,14 +30,25 @@ class ReasonResponse(BaseModel):
     repair_attempts: int
 
 
-def require_auth(authorization: str | None = Header(default=None)) -> None:
-    if not settings.require_api_key:
-        return
+def _validate_api_key(authorization: str | None) -> None:
     if not settings.api_key:
-        raise HTTPException(status_code=500, detail="GANGLIA_REQUIRE_API_KEY=true but GANGLIA_API_KEY is empty")
+        raise HTTPException(status_code=500, detail="API key is required but GANGLIA_API_KEY is empty")
     expected = f"Bearer {settings.api_key}"
     if authorization != expected:
         raise HTTPException(status_code=401, detail="Invalid or missing API key")
+
+
+def require_auth(authorization: str | None = Header(default=None)) -> None:
+    if not settings.require_api_key:
+        return
+    _validate_api_key(authorization)
+
+
+def require_trace_access(authorization: str | None = Header(default=None)) -> None:
+    if not settings.expose_trace:
+        raise HTTPException(status_code=403, detail="Trace exposure disabled")
+    if settings.trace_require_api_key:
+        _validate_api_key(authorization)
 
 
 @app.get("/health")
@@ -63,16 +74,12 @@ def reason(request: ReasonRequest, _: None = Depends(require_auth)) -> dict[str,
 
 
 @app.get("/trace")
-def list_traces(limit: int = 20, _: None = Depends(require_auth)) -> dict[str, Any]:
-    if not settings.expose_trace:
-        raise HTTPException(status_code=403, detail="Trace exposure disabled")
+def list_traces(limit: int = 20, _: None = Depends(require_trace_access)) -> dict[str, Any]:
     return {"traces": runtime.trace_store.list_recent(limit)}
 
 
 @app.get("/trace/{trace_id}")
-def get_trace(trace_id: str, _: None = Depends(require_auth)) -> dict[str, Any]:
-    if not settings.expose_trace:
-        raise HTTPException(status_code=403, detail="Trace exposure disabled")
+def get_trace(trace_id: str, _: None = Depends(require_trace_access)) -> dict[str, Any]:
     trace = runtime.trace_store.get(trace_id)
     if not trace:
         raise HTTPException(status_code=404, detail="Trace not found")
