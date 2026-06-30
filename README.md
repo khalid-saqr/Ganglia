@@ -17,12 +17,6 @@ Ganglia routes each request through a declarative language-game operator, asks t
 
 </div>
 
-<div align="center">
-
-[Explore the one-page GitHub Pages site](docs/)
-
-</div>
-
 ---
 
 ## Works with
