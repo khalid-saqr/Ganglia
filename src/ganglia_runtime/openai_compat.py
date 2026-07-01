@@ -5,18 +5,34 @@ import uuid
 from typing import Any
 
 
+TEXT_CONTENT_TYPES = {"text", "input_text"}
+SUPPORTED_MESSAGE_ROLES = {"user", "system", "developer"}
+
+
+def _text_from_content_parts(content: list[Any]) -> str:
+    text_parts: list[str] = []
+    for item in content:
+        if not isinstance(item, dict):
+            continue
+        if item.get("type") not in TEXT_CONTENT_TYPES:
+            continue
+        text = item.get("text", "")
+        if isinstance(text, str) and text:
+            text_parts.append(text)
+    return "\n".join(text_parts)
+
+
 def messages_to_user_message(messages: list[dict[str, Any]]) -> str:
     parts: list[str] = []
     for message in messages:
         role = message.get("role", "user")
+        if role not in SUPPORTED_MESSAGE_ROLES:
+            continue
+
         content = message.get("content", "")
         if isinstance(content, list):
-            text_parts = []
-            for item in content:
-                if isinstance(item, dict) and item.get("type") in {"text", "input_text"}:
-                    text_parts.append(str(item.get("text", "")))
-            content = "\n".join(text_parts)
-        if role in {"user", "system", "developer"} and content:
+            content = _text_from_content_parts(content)
+        if isinstance(content, str) and content:
             parts.append(f"[{role}] {content}")
     return "\n".join(parts).strip()
 
