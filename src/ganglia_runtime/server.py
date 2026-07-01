@@ -113,7 +113,7 @@ async def v1_chat_completions(request: Request, _: None = Depends(require_auth))
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except GangliaError as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
-    return completion_response(model=model, content=result["answer"], trace_id=result["trace_id"])
+    return completion_response(model=model, content=result["answer"], trace_id=result["trace_id"], usage=result.get("usage"))
 
 
 def create_app() -> FastAPI:

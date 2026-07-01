@@ -1,4 +1,4 @@
-from ganglia_runtime.openai_compat import messages_to_user_message, model_to_operator
+from ganglia_runtime.openai_compat import completion_response, messages_to_user_message, model_to_operator
 
 
 def test_messages_to_user_message():
@@ -73,3 +73,17 @@ def test_messages_to_user_message_unsupported_multimodal_inputs_return_empty_mes
 def test_model_to_operator():
     assert model_to_operator("ganglia/grid_game") == "grid_game"
     assert model_to_operator("other") == "auto"
+
+
+def test_completion_response_omits_usage_when_unavailable():
+    response = completion_response(model="ganglia/auto", content="answer", trace_id="trace-1")
+
+    assert "usage" not in response
+    assert response["ganglia"] == {"trace_id": "trace-1"}
+
+
+def test_completion_response_includes_backend_usage_when_available():
+    usage = {"prompt_tokens": 11, "completion_tokens": 7, "total_tokens": 18}
+    response = completion_response(model="ganglia/auto", content="answer", trace_id="trace-1", usage=usage)
+
+    assert response["usage"] == usage

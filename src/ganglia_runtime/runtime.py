@@ -4,7 +4,7 @@ from typing import Any
 
 from .config import Settings
 from .errors import OperatorNotFoundError, ValidationFailure
-from .ollama_client import OllamaClient
+from .ollama_client import ChatResult, ChatUsage, OllamaClient
 from .operator_loader import OperatorRegistry
 from .prompt_compiler import compile_messages
 from .renderers import render_answer
@@ -12,6 +12,17 @@ from .repair import compile_repair_messages
 from .router import route_operator
 from .trace_store import ReasoningTrace, TraceStore
 from .validators import extract_json_object, validate_output
+
+
+def _add_usage(left: ChatUsage | None, right: ChatUsage | None) -> ChatUsage | None:
+    if left is None:
+        return right
+    if right is None:
+        return left
+    return ChatUsage(
+        prompt_tokens=left.prompt_tokens + right.prompt_tokens,
+        completion_tokens=left.completion_tokens + right.completion_tokens,
+    )
 
 
 class GangliaRuntime:
@@ -50,7 +61,9 @@ class GangliaRuntime:
         messages = compile_messages(spec, message)
         trace = ReasoningTrace.new(operator=spec.id, model=model, user_message=message, compiled_messages=messages)
 
-        raw = self.llm_client.chat(model=model, messages=messages, schema=spec.output_schema, temperature=self.settings.temperature)
+        chat_result = self.llm_client.chat(model=model, messages=messages, schema=spec.output_schema, temperature=self.settings.temperature)
+        raw = chat_result.content if isinstance(chat_result, ChatResult) else chat_result
+        usage = chat_result.usage if isinstance(chat_result, ChatResult) else None
         trace.raw_model_output = raw
         current: dict[str, Any] | str
         try:
@@ -66,12 +79,15 @@ class GangliaRuntime:
             attempts += 1
             trace.repair_attempts = attempts
             repair_messages = compile_repair_messages(spec, message, current, errors)
-            raw_repair = self.llm_client.chat(
+            repair_result = self.llm_client.chat(
                 model=model,
                 messages=repair_messages,
                 schema=spec.output_schema,
                 temperature=min(self.settings.temperature, 0.2),
             )
+            raw_repair = repair_result.content if isinstance(repair_result, ChatResult) else repair_result
+            if isinstance(repair_result, ChatResult):
+                usage = _add_usage(usage, repair_result.usage)
             trace.raw_model_output = raw_repair
             try:
                 current = extract_json_object(raw_repair)
@@ -97,4 +113,5 @@ class GangliaRuntime:
             "answer": final_answer,
             "controlled_reasoning": current,
             "repair_attempts": attempts,
+            "usage": usage.to_openai_usage() if usage else None,
         }

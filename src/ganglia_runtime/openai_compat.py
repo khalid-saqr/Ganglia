@@ -45,8 +45,10 @@ def model_to_operator(model: str | None) -> str:
     return "auto"
 
 
-def completion_response(*, model: str, content: str, trace_id: str | None = None) -> dict[str, Any]:
-    return {
+def completion_response(
+    *, model: str, content: str, trace_id: str | None = None, usage: dict[str, int] | None = None
+) -> dict[str, Any]:
+    response = {
         "id": f"chatcmpl-ganglia-{uuid.uuid4().hex[:24]}",
         "object": "chat.completion",
         "created": int(time.time()),
@@ -58,9 +60,11 @@ def completion_response(*, model: str, content: str, trace_id: str | None = None
                 "finish_reason": "stop",
             }
         ],
-        "usage": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
         "ganglia": {"trace_id": trace_id},
     }
+    if usage is not None:
+        response["usage"] = usage
+    return response
 
 
 def models_response(operator_ids: list[str]) -> dict[str, Any]:

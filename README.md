@@ -276,6 +276,8 @@ curl -X POST http://127.0.0.1:8717/v1/chat/completions \
   }'
 ```
 
+Usage reporting follows the backend response. When Ollama returns `prompt_eval_count` and `eval_count`, Ganglia maps them to OpenAI-compatible `usage.prompt_tokens`, `usage.completion_tokens`, and `usage.total_tokens`. If those exact backend counts are unavailable, Ganglia omits the `usage` field instead of returning approximate or hard-coded zero token counts.
+
 ### `GET /trace`
 
 Lists recent traces. This endpoint is disabled by default and requires `GANGLIA_EXPOSE_TRACE=true`. By default, it also requires a bearer token configured with `GANGLIA_API_KEY`.
