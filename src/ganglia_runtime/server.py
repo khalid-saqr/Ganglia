@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import Depends, FastAPI, Header, HTTPException, Request
+from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request
 from pydantic import BaseModel, Field
 
 from .config import Settings
@@ -74,7 +74,7 @@ def reason(request: ReasonRequest, _: None = Depends(require_auth)) -> dict[str,
 
 
 @app.get("/trace")
-def list_traces(limit: int = 20, _: None = Depends(require_trace_access)) -> dict[str, Any]:
+def list_traces(limit: int = Query(20, ge=1, le=100), _: None = Depends(require_trace_access)) -> dict[str, Any]:
     return {"traces": runtime.trace_store.list_recent(limit)}
 
 
