@@ -38,9 +38,9 @@ test = ["pytest>=8.0"]
 dev = ["pytest>=8.0", "ruff>=0.5"]
 
 [project.urls]
-Homepage = "https://github.com/your-org/ganglia-runtime"
-Repository = "https://github.com/your-org/ganglia-runtime"
-Issues = "https://github.com/your-org/ganglia-runtime/issues"
+Homepage = "https://github.com/khalid-saqr/Ganglia"
+Repository = "https://github.com/khalid-saqr/Ganglia"
+Issues = "https://github.com/khalid-saqr/Ganglia/issues"
 
 [project.scripts]
 ganglia = "ganglia_runtime.cli:main"
