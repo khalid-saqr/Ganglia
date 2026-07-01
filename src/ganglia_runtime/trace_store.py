@@ -88,6 +88,7 @@ class TraceStore:
         return json.loads(row[0])
 
     def list_recent(self, limit: int = 20) -> list[dict[str, Any]]:
+        limit = min(max(limit, 1), 100)
         with self._connect() as conn:
             rows = conn.execute(
                 "SELECT trace_id, timestamp, operator, model, user_message FROM traces ORDER BY timestamp DESC LIMIT ?",
