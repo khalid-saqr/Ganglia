@@ -102,7 +102,7 @@ async def v1_chat_completions(request: Request, _: None = Depends(require_auth))
         raise HTTPException(status_code=400, detail="messages must be a list")
     user_message = messages_to_user_message(messages)
     if not user_message:
-        raise HTTPException(status_code=400, detail="No usable user message found")
+        raise HTTPException(status_code=400, detail="No usable text content found in user, system, or developer messages")
     operator = body.get("operator") or model_to_operator(model)
     backend_model = body.get("ganglia_model") or settings.model
     try:
