@@ -9,6 +9,10 @@ from pathlib import Path
 from typing import Any
 
 
+SQLITE_TIMEOUT_SECONDS = 5.0
+SQLITE_BUSY_TIMEOUT_MS = 5_000
+
+
 @dataclass
 class ReasoningTrace:
     trace_id: str
@@ -49,11 +53,14 @@ class TraceStore:
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._init()
 
-    def _connect(self):
-        return sqlite3.connect(self.db_path)
+    def _connect(self) -> sqlite3.Connection:
+        conn = sqlite3.connect(self.db_path, timeout=SQLITE_TIMEOUT_SECONDS)
+        conn.execute(f"PRAGMA busy_timeout = {SQLITE_BUSY_TIMEOUT_MS}")
+        return conn
 
     def _init(self) -> None:
         with self._connect() as conn:
+            conn.execute("PRAGMA journal_mode = WAL")
             conn.execute(
                 """
                 CREATE TABLE IF NOT EXISTS traces (
@@ -65,6 +72,15 @@ class TraceStore:
                     payload TEXT NOT NULL
                 )
                 """
+            )
+            conn.execute(
+                "CREATE INDEX IF NOT EXISTS idx_traces_timestamp ON traces(timestamp DESC)"
+            )
+            conn.execute(
+                "CREATE INDEX IF NOT EXISTS idx_traces_operator_timestamp ON traces(operator, timestamp DESC)"
+            )
+            conn.execute(
+                "CREATE INDEX IF NOT EXISTS idx_traces_model_timestamp ON traces(model, timestamp DESC)"
             )
             conn.commit()
 
