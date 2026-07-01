@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hmac
 from typing import Any
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request
@@ -34,7 +35,7 @@ def _validate_api_key(authorization: str | None) -> None:
     if not settings.api_key:
         raise HTTPException(status_code=500, detail="API key is required but GANGLIA_API_KEY is empty")
     expected = f"Bearer {settings.api_key}"
-    if authorization != expected:
+    if not hmac.compare_digest(authorization or "", expected):
         raise HTTPException(status_code=401, detail="Invalid or missing API key")
 
 
